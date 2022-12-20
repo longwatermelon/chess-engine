@@ -2,6 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <unordered_map>
+#include <SDL2/SDL_image.h>
 
 Board::Board(const std::string &fp)
 {
@@ -40,6 +42,22 @@ SDL_Texture *Board::render(SDL_Renderer *rend)
     SDL_SetRenderDrawColor(rend, 0, 0, 0, 255);
     SDL_RenderFillRect(rend, nullptr);
 
+    std::unordered_map<char, SDL_Texture*> textures = {
+        { 'p', IMG_LoadTexture(rend, "res/w-pawn.png") },
+        { 'r', IMG_LoadTexture(rend, "res/w-rook.png") },
+        { 'k', IMG_LoadTexture(rend, "res/w-knight.png") },
+        { 'b', IMG_LoadTexture(rend, "res/w-bishop.png") },
+        { 'q', IMG_LoadTexture(rend, "res/w-queen.png") },
+        { 'g', IMG_LoadTexture(rend, "res/w-king.png") },
+
+        { 'P', IMG_LoadTexture(rend, "res/b-pawn.png") },
+        { 'R', IMG_LoadTexture(rend, "res/b-rook.png") },
+        { 'K', IMG_LoadTexture(rend, "res/b-knight.png") },
+        { 'B', IMG_LoadTexture(rend, "res/b-bishop.png") },
+        { 'Q', IMG_LoadTexture(rend, "res/b-queen.png") },
+        { 'G', IMG_LoadTexture(rend, "res/b-king.png") }
+    };
+
     for (int y = 0; y < 8; ++y)
     {
         for (int x = 0; x < 8; ++x)
@@ -51,8 +69,14 @@ SDL_Texture *Board::render(SDL_Renderer *rend)
 
             SDL_Rect r = { x * 100, y * 100, 100, 100 };
             SDL_RenderFillRect(rend, &r);
+
+            if (m_grid[y * 8 + x] != ' ')
+                SDL_RenderCopy(rend, textures[m_grid[y * 8 + x]], 0, &r);
         }
     }
+
+    for (auto &pair : textures)
+        SDL_DestroyTexture(pair.second);
 
     SDL_SetRenderTarget(rend, nullptr);
     return res;

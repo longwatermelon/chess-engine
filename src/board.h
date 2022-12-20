@@ -1,12 +1,14 @@
 #pragma once
 #include <string>
 #include <array>
+#include <vector>
 #include <SDL2/SDL.h>
 
 enum class Color
 {
     WHITE,
-    BLACK
+    BLACK,
+    NONE
 };
 
 class Board
@@ -23,8 +25,14 @@ public:
     void dump();
 
 private:
+    std::vector<int> get_valid_moves(int i);
+    void step_in_dir(std::vector<int>& valid, int dx, int dy);
+
+    Color color_at(int i);
+
+private:
     std::string m_fp;
     std::string m_grid;
-    Color m_turn{ Color::WHITE };
+    Color m_turn{ Color::NONE };
 };
 

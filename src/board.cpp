@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <unordered_map>
+#include <algorithm>
 #include <SDL2/SDL_image.h>
 
 Board::Board(const std::string &fp)
@@ -61,6 +62,10 @@ SDL_Texture *Board::render(SDL_Renderer *rend)
         { 'G', IMG_LoadTexture(rend, "res/b-king.png") }
     };
 
+    char tmp[3] = "e4";
+    int index = tmp[0] - 'a' + (7 - (tmp[1] - '1')) * 8;
+    std::vector<int> valid_moves = get_valid_moves(index);
+
     for (int y = 0; y < 8; ++y)
     {
         for (int x = 0; x < 8; ++x)
@@ -72,6 +77,14 @@ SDL_Texture *Board::render(SDL_Renderer *rend)
 
             SDL_Rect r = { x * 100, y * 100, 100, 100 };
             SDL_RenderFillRect(rend, &r);
+
+            if (std::find(valid_moves.begin(), valid_moves.end(), y * 8 + x) != valid_moves.end())
+            {
+                SDL_SetRenderDrawBlendMode(rend, SDL_BLENDMODE_BLEND);
+                SDL_SetRenderDrawColor(rend, 0, 255, 0, 150);
+                SDL_RenderFillRect(rend, &r);
+                SDL_SetRenderDrawBlendMode(rend, SDL_BLENDMODE_NONE);
+            }
 
             if (m_grid[y * 8 + x] != ' ')
                 SDL_RenderCopy(rend, textures[m_grid[y * 8 + x]], 0, &r);
@@ -93,8 +106,7 @@ void Board::move(int from, int to)
         exit(EXIT_FAILURE);
     }
 
-    Color col = m_grid[from] - 'a' < 0 ? Color::BLACK : Color::WHITE;
-    if (col != m_turn)
+    if (color_at(from) != m_turn)
     {
         std::cerr << "Error: wrong piece color\n";
         exit(EXIT_FAILURE);
@@ -117,5 +129,44 @@ void Board::dump()
     }
 
     ofs.close();
+}
+
+std::vector<int> Board::get_valid_moves(int i)
+{
+    std::vector<int> valid;
+
+    switch (m_grid[i])
+    {
+    case 'p':
+        valid.emplace_back(i - 8);
+        if (i >= 8 * 6 - 1)
+            valid.emplace_back(i - 16);
+
+        if (color_at(i - 8 - 1) == Color::BLACK) valid.emplace_back(i - 8 - 1);
+        if (color_at(i - 8 + 1) == Color::BLACK) valid.emplace_back(i - 8 + 1);
+        break;
+    case 'P':
+        valid.emplace_back(i + 8);
+        if (i <= 8 * 2 - 1)
+            valid.emplace_back(i + 16);
+
+        if (color_at(i + 8 - 1) == Color::WHITE) valid.emplace_back(i + 8 - 1);
+        if (color_at(i + 8 + 1) == Color::WHITE) valid.emplace_back(i + 8 + 1);
+        break;
+    }
+
+    std::cout << m_grid[i] << '\n';
+
+    return valid;
+}
+
+void Board::step_in_dir(std::vector<int>& valid, int dx, int dy)
+{
+}
+
+Color Board::color_at(int i)
+{
+    if (i < 0 || i >= 64) return Color::NONE;
+    return m_grid[i] == ' ' ? Color::NONE : (m_grid[i] - 'a' < 0 ? Color::BLACK : Color::WHITE);
 }
 

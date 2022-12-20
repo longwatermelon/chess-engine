@@ -1,4 +1,5 @@
 #include "prog.h"
+#include <iostream>
 
 Prog::Prog(SDL_Window *w, SDL_Renderer *r, const std::string &fp)
     : m_win(w), m_rend(r), m_board(fp)
@@ -27,5 +28,17 @@ void Prog::render(const std::string &out_fp)
     SDL_Texture *tex = m_board.render(m_rend);
     save_texture(out_fp.c_str(), m_rend, tex);
     SDL_DestroyTexture(tex);
+}
+
+void Prog::move(const char *from, const char *to)
+{
+    if (strlen(from) != 2 || strlen(to) != 2)
+    {
+        std::cerr << "Error: either from or to is not valid.\n";
+        exit(EXIT_FAILURE);
+    }
+
+    m_board.move(from[0] - 'a' + (7 - (from[1] - '1')) * 8,
+                 to[0] - 'a' + (7 - (to[1] - '1')) * 8);
 }
 

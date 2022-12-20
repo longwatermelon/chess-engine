@@ -3,6 +3,12 @@
 
 int main(int argc, char **argv)
 {
+    if (argc != 4)
+    {
+        std::cerr << "Error: not enough args\n";
+        exit(EXIT_FAILURE);
+    }
+
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
 
@@ -14,7 +20,8 @@ int main(int argc, char **argv)
         SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
     {
-        Prog p(w, r, "test");
+        Prog p(w, r, argv[1]);
+        p.move(argv[2], argv[3]);
         p.render("out.png");
     }
 

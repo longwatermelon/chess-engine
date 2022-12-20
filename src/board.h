@@ -25,8 +25,13 @@ public:
     void dump();
 
 private:
-    std::vector<int> get_valid_moves(int i);
-    void step_in_dir(std::vector<int>& valid, int i, int dx, int dy);
+    // raw: ignore moves that would put own king in check and include own pieces if true
+    std::vector<int> get_valid_moves(int i, bool raw = false);
+    void add_valid_move(std::vector<int> &moves, int from, int to, bool raw);
+    void step_in_dir(std::vector<int>& valid, int i, int dx, int dy, bool raw);
+
+    bool detect_check(Color target);
+    bool detect_checkmate(Color target);
 
     char at(int i);
     Color color_at(int i);

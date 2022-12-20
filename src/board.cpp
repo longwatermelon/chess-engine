@@ -113,6 +113,13 @@ void Board::move(int from, int to)
     m_grid[from] = ' ';
 
     m_turn = m_turn == Color::WHITE ? Color::BLACK : Color::WHITE;
+    if (detect_check(m_turn))
+    {
+        if (detect_checkmate(m_turn))
+            std::cout << "Checkmate\n";
+        else
+            std::cout << "Check\n";
+    }
 }
 
 void Board::dump()
@@ -130,32 +137,32 @@ void Board::dump()
     ofs.close();
 }
 
-std::vector<int> Board::get_valid_moves(int i)
+std::vector<int> Board::get_valid_moves(int i, bool raw)
 {
     std::vector<int> valid;
 
     switch (m_grid[i])
     {
     case 'p':
-        if (at(i - 8) == ' ') valid.emplace_back(i - 8);
-        if (i >= 8 * 6 - 1 && at(i - 16) == ' ') valid.emplace_back(i - 16);
+        if (at(i - 8) == ' ') add_valid_move(valid, i, i - 8, raw);
+        if (i >= 8 * 6 - 1 && at(i - 16) == ' ') add_valid_move(valid, i, i - 16, raw);
 
-        if (color_at(i - 8 - 1) == Color::BLACK) valid.emplace_back(i - 8 - 1);
-        if (color_at(i - 8 + 1) == Color::BLACK) valid.emplace_back(i - 8 + 1);
+        if (color_at(i - 8 - 1) == Color::BLACK) add_valid_move(valid, i, i - 8 - 1, raw);
+        if (color_at(i - 8 + 1) == Color::BLACK) add_valid_move(valid, i, i - 8 + 1, raw);
         break;
     case 'P':
-        if (at(i + 8) == ' ') valid.emplace_back(i + 8);
-        if (i <= 8 * 2 - 1 && at(i + 16) == ' ') valid.emplace_back(i + 16);
+        if (at(i + 8) == ' ') add_valid_move(valid, i, i + 8, raw);
+        if (i <= 8 * 2 - 1 && at(i + 16) == ' ') add_valid_move(valid, i, i + 16, raw);
 
-        if (color_at(i + 8 - 1) == Color::WHITE) valid.emplace_back(i + 8 - 1);
-        if (color_at(i + 8 + 1) == Color::WHITE) valid.emplace_back(i + 8 + 1);
+        if (color_at(i + 8 - 1) == Color::WHITE) add_valid_move(valid, i, i + 8 - 1, raw);
+        if (color_at(i + 8 + 1) == Color::WHITE) add_valid_move(valid, i, i + 8 + 1, raw);
         break;
     case 'r':
     case 'R':
-        step_in_dir(valid, i, 1, 0);
-        step_in_dir(valid, i, 0, -1);
-        step_in_dir(valid, i, -1, 0);
-        step_in_dir(valid, i, 0, 1);
+        step_in_dir(valid, i, 1, 0, raw);
+        step_in_dir(valid, i, 0, -1, raw);
+        step_in_dir(valid, i, -1, 0, raw);
+        step_in_dir(valid, i, 0, 1, raw);
         break;
     case 'k':
     case 'K':
@@ -167,28 +174,28 @@ std::vector<int> Board::get_valid_moves(int i)
             for (int c = std::max(x - 2, 0); c <= std::min(x + 2, 8); ++c)
             {
                 if (std::abs((r - y) * (c - x)) == 2 && color_at(r * 8 + c) != color_at(i))
-                    valid.emplace_back(r * 8 + c);
+                    add_valid_move(valid, i, r * 8 + c, raw);
             }
         }
     } break;
     case 'b':
     case 'B':
-        step_in_dir(valid, i, 1, 1);
-        step_in_dir(valid, i, -1, 1);
-        step_in_dir(valid, i, -1, -1);
-        step_in_dir(valid, i, 1, -1);
+        step_in_dir(valid, i, 1, 1, raw);
+        step_in_dir(valid, i, -1, 1, raw);
+        step_in_dir(valid, i, -1, -1, raw);
+        step_in_dir(valid, i, 1, -1, raw);
         break;
     case 'q':
     case 'Q':
-        step_in_dir(valid, i, 1, 1);
-        step_in_dir(valid, i, -1, 1);
-        step_in_dir(valid, i, -1, -1);
-        step_in_dir(valid, i, 1, -1);
+        step_in_dir(valid, i, 1, 1, raw);
+        step_in_dir(valid, i, -1, 1, raw);
+        step_in_dir(valid, i, -1, -1, raw);
+        step_in_dir(valid, i, 1, -1, raw);
 
-        step_in_dir(valid, i, 1, 0);
-        step_in_dir(valid, i, 0, -1);
-        step_in_dir(valid, i, -1, 0);
-        step_in_dir(valid, i, 0, 1);
+        step_in_dir(valid, i, 1, 0, raw);
+        step_in_dir(valid, i, 0, -1, raw);
+        step_in_dir(valid, i, -1, 0, raw);
+        step_in_dir(valid, i, 0, 1, raw);
         break;
     case 'g':
     case 'G':
@@ -199,7 +206,7 @@ std::vector<int> Board::get_valid_moves(int i)
             for (int c = std::max(x - 1, 0); c <= std::min(x + 1, 8); ++c)
             {
                 if (color_at(r * 8 + c) != color_at(i))
-                    valid.emplace_back(r * 8 + c);
+                    add_valid_move(valid, i, r * 8 + c, raw);
             }
         }
         break;
@@ -208,22 +215,85 @@ std::vector<int> Board::get_valid_moves(int i)
     return valid;
 }
 
-void Board::step_in_dir(std::vector<int>& valid, int i, int dx, int dy)
+void Board::add_valid_move(std::vector<int> &moves, int from, int to, bool raw)
+{
+    if (from < 0 || from >= 64 || to < 0 || to >= 64)
+        return;
+
+    if (raw)
+    {
+        moves.emplace_back(to);
+    }
+    else
+    {
+        char tmp = m_grid[to];
+        m_grid[to] = m_grid[from];
+        m_grid[from] = ' ';
+
+        if (!detect_check(color_at(to)))
+            moves.emplace_back(to);
+
+        m_grid[from] = m_grid[to];
+        m_grid[to] = tmp;
+    }
+}
+
+void Board::step_in_dir(std::vector<int>& valid, int i, int dx, int dy, bool raw)
 {
     Color col = color_at(i);
-    valid.emplace_back(i);
+    /* valid.emplace_back(i); */
     int x = i % 8 + dx;
     int y = i / 8 + dy;
 
     while (x >= 0 && x < 8 && y >= 0 && y < 8 && at(y * 8 + x) == ' ')
     {
-        valid.emplace_back(y * 8 + x);
+        add_valid_move(valid, i, y * 8 + x, raw);
         x += dx;
         y += dy;
     }
 
-    if (col != color_at(y * 8 + x) && color_at(y * 8 + x) != Color::NONE)
-        valid.emplace_back(y * 8 + x);
+    if ((raw || col != color_at(y * 8 + x)) && color_at(y * 8 + x) != Color::NONE)
+        add_valid_move(valid, i, y * 8 + x, raw);
+}
+
+bool Board::detect_check(Color target)
+{
+    // Find king pos
+    size_t king_i;
+    for (size_t i = 0; i < m_grid.size(); ++i)
+    {
+        if (m_grid[i] == (target == Color::WHITE ? 'g' : 'G'))
+        {
+            king_i = i;
+            break;
+        }
+    }
+
+    for (size_t i = 0; i < m_grid.size(); ++i)
+    {
+        if (color_at(i) != target)
+        {
+            std::vector<int> moves = get_valid_moves(i, true);
+            if (std::find(moves.begin(), moves.end(), king_i) != moves.end())
+                return true;
+        }
+    }
+
+    return false;
+}
+
+bool Board::detect_checkmate(Color target)
+{
+    for (size_t i = 0; i < m_grid.size(); ++i)
+    {
+        if (color_at(i) == target)
+        {
+            if (!get_valid_moves(i).empty())
+                return false;
+        }
+    }
+
+    return true;
 }
 
 char Board::at(int i)

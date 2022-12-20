@@ -7,7 +7,7 @@
 class Prog
 {
 public:
-    Prog(SDL_Window *w, SDL_Renderer *r, const std::string &fp);
+    Prog(SDL_Window *w, SDL_Renderer *r, const std::string &fp, const std::string &res_fp);
     ~Prog();
 
     void render(const std::string &out_fp);
@@ -18,5 +18,6 @@ private:
     SDL_Renderer *m_rend{ nullptr };
 
     Board m_board;
+    std::string m_res_fp;
 };
 

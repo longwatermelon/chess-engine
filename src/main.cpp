@@ -20,8 +20,8 @@ int main(int argc, char **argv)
         SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
     {
-        Prog p(w, r, argv[1]);
-        /* p.move(argv[2], argv[3]); */
+        Prog p(w, r, argv[1], "log");
+        p.move(argv[2], argv[3]);
         p.render("out.png");
     }
 

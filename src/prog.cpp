@@ -1,9 +1,11 @@
 #include "prog.h"
 #include <iostream>
+#include <fstream>
 
-Prog::Prog(SDL_Window *w, SDL_Renderer *r, const std::string &fp)
-    : m_win(w), m_rend(r), m_board(fp)
+Prog::Prog(SDL_Window *w, SDL_Renderer *r, const std::string &fp, const std::string &res_fp)
+    : m_win(w), m_rend(r), m_board(fp), m_res_fp(res_fp)
 {
+    std::fstream fs(res_fp, std::fstream::out | std::fstream::trunc);
 }
 
 Prog::~Prog()
@@ -38,7 +40,15 @@ void Prog::move(const char *from, const char *to)
         exit(EXIT_FAILURE);
     }
 
-    m_board.move(from[0] - 'a' + (7 - (from[1] - '1')) * 8,
-                 to[0] - 'a' + (7 - (to[1] - '1')) * 8);
+    try
+    {
+        m_board.move(from[0] - 'a' + (7 - (from[1] - '1')) * 8,
+                     to[0] - 'a' + (7 - (to[1] - '1')) * 8);
+    }
+    catch (const std::runtime_error &err)
+    {
+        std::ofstream ofs(m_res_fp);
+        ofs << err.what();
+    }
 }
 

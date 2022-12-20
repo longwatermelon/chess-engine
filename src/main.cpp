@@ -3,12 +3,6 @@
 
 int main(int argc, char **argv)
 {
-    if (argc != 4)
-    {
-        std::cerr << "Error: not enough args\n";
-        exit(EXIT_FAILURE);
-    }
-
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
 
@@ -20,9 +14,15 @@ int main(int argc, char **argv)
         SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
     {
+        // argv[1] = game status log file
+        // argv[2] = rendered game png file
+        // argv[3], argv[4] = from, to
         Prog p(w, r, argv[1], "log");
-        p.move(argv[2], argv[3]);
-        p.render("out.png");
+
+        if (argc == 5)
+            p.move(argv[3], argv[4]);
+
+        p.render(argv[2]);
     }
 
     SDL_DestroyRenderer(r);

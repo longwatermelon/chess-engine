@@ -7,6 +7,7 @@ Prog::Prog(SDL_Window *w, SDL_Renderer *r, const std::string &fp)
 
 Prog::~Prog()
 {
+    m_board.dump();
 }
 
 static void save_texture(const char* file_name, SDL_Renderer* renderer, SDL_Texture* texture) {

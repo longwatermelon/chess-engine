@@ -6,6 +6,7 @@
 #include <SDL2/SDL_image.h>
 
 Board::Board(const std::string &fp)
+    : m_fp(fp)
 {
     std::ifstream ifs(fp);
     std::stringstream ss;
@@ -19,6 +20,8 @@ Board::Board(const std::string &fp)
     // Get board information
     while (std::getline(ifs, buf))
         ss << buf;
+
+    ifs.close();
 
     m_grid = ss.str();
     if (m_grid.size() != 64)
@@ -80,5 +83,26 @@ SDL_Texture *Board::render(SDL_Renderer *rend)
 
     SDL_SetRenderTarget(rend, nullptr);
     return res;
+}
+
+void Board::move(int from, int to)
+{
+    m_grid[to] = m_grid[from];
+    m_grid[from] = ' ';
+}
+
+void Board::dump()
+{
+    std::ofstream ofs(m_fp);
+    ofs << (m_turn == Color::WHITE ? 'w' : 'b') << '\n';
+    for (size_t i = 0; i < m_grid.size(); ++i)
+    {
+        ofs << m_grid[i];
+
+        if ((i + 1) % 8 == 0)
+            ofs << '\n';
+    }
+
+    ofs.close();
 }
 

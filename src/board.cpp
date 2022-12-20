@@ -178,6 +178,25 @@ std::vector<int> Board::get_valid_moves(int i)
             }
         }
     } break;
+    case 'b':
+    case 'B':
+        step_in_dir(valid, i, 1, 1);
+        step_in_dir(valid, i, -1, 1);
+        step_in_dir(valid, i, -1, -1);
+        step_in_dir(valid, i, 1, -1);
+        break;
+    case 'q':
+    case 'Q':
+        step_in_dir(valid, i, 1, 1);
+        step_in_dir(valid, i, -1, 1);
+        step_in_dir(valid, i, -1, -1);
+        step_in_dir(valid, i, 1, -1);
+
+        step_in_dir(valid, i, 1, 0);
+        step_in_dir(valid, i, 0, -1);
+        step_in_dir(valid, i, -1, 0);
+        step_in_dir(valid, i, 0, 1);
+        break;
     }
 
     return valid;

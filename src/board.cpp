@@ -87,6 +87,19 @@ SDL_Texture *Board::render(SDL_Renderer *rend)
 
 void Board::move(int from, int to)
 {
+    if (m_grid[from] == ' ')
+    {
+        std::cerr << "Error: not a piece\n";
+        exit(EXIT_FAILURE);
+    }
+
+    Color col = m_grid[from] - 'a' < 0 ? Color::BLACK : Color::WHITE;
+    if (col != m_turn)
+    {
+        std::cerr << "Error: wrong piece color\n";
+        exit(EXIT_FAILURE);
+    }
+
     m_grid[to] = m_grid[from];
     m_grid[from] = ' ';
 }
@@ -94,7 +107,7 @@ void Board::move(int from, int to)
 void Board::dump()
 {
     std::ofstream ofs(m_fp);
-    ofs << (m_turn == Color::WHITE ? 'w' : 'b') << '\n';
+    ofs << (m_turn == Color::WHITE ? 'b' : 'w') << '\n';
     for (size_t i = 0; i < m_grid.size(); ++i)
     {
         ofs << m_grid[i];

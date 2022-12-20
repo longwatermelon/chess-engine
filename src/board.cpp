@@ -115,10 +115,12 @@ void Board::move(int from, int to)
     m_turn = m_turn == Color::WHITE ? Color::BLACK : Color::WHITE;
     if (detect_check(m_turn))
     {
+        std::string col = m_turn == Color::WHITE ? "White" : "Black";
+
         if (detect_checkmate(m_turn))
-            std::cout << "Checkmate\n";
+            throw std::runtime_error("Checkmate: " + col + " loses.");
         else
-            std::cout << "Check\n";
+            throw std::runtime_error(col + " is in check.");
     }
 }
 

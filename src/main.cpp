@@ -14,13 +14,14 @@ int main(int argc, char **argv)
         SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
     {
-        // argv[1] = game status log file
+        // argv[1] = source file
         // argv[2] = rendered game png file
+        // argv[3] = game log information
         // argv[3], argv[4] = from, to
-        Prog p(w, r, argv[1], "log");
+        Prog p(w, r, argv[1], argv[3]);
 
-        if (argc == 5)
-            p.move(argv[3], argv[4]);
+        if (argc == 6)
+            p.move(argv[4], argv[5]);
 
         p.render(argv[2]);
     }

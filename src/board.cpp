@@ -28,7 +28,6 @@ Board::Board(const std::string &fp)
     if (m_grid.size() != 64)
     {
         std::cerr << "Error: grid size is not 64 (" << m_grid.size() << ").\n";
-        std::cout << m_grid << "\n";
         exit(EXIT_FAILURE);
     }
 }
@@ -112,6 +111,13 @@ void Board::move(int from, int to)
         exit(EXIT_FAILURE);
     }
 
+    std::vector<int> moves = get_valid_moves(from);
+    if (std::find(moves.begin(), moves.end(), to) == moves.end())
+    {
+        std::cerr << "Error: invalid move\n";
+        exit(EXIT_FAILURE);
+    }
+
     m_grid[to] = m_grid[from];
     m_grid[from] = ' ';
 }
@@ -138,30 +144,32 @@ std::vector<int> Board::get_valid_moves(int i)
     switch (m_grid[i])
     {
     case 'p':
-        valid.emplace_back(i - 8);
-        if (i >= 8 * 6 - 1)
-            valid.emplace_back(i - 16);
+        if (at(i - 8) == ' ') valid.emplace_back(i - 8);
+        if (i >= 8 * 6 - 1 && at(i - 16) == ' ') valid.emplace_back(i - 16);
 
         if (color_at(i - 8 - 1) == Color::BLACK) valid.emplace_back(i - 8 - 1);
         if (color_at(i - 8 + 1) == Color::BLACK) valid.emplace_back(i - 8 + 1);
         break;
     case 'P':
-        valid.emplace_back(i + 8);
-        if (i <= 8 * 2 - 1)
-            valid.emplace_back(i + 16);
+        if (at(i + 8) == ' ') valid.emplace_back(i + 8);
+        if (i <= 8 * 2 - 1 && at(i + 16) == ' ') valid.emplace_back(i + 16);
 
         if (color_at(i + 8 - 1) == Color::WHITE) valid.emplace_back(i + 8 - 1);
         if (color_at(i + 8 + 1) == Color::WHITE) valid.emplace_back(i + 8 + 1);
         break;
     }
 
-    std::cout << m_grid[i] << '\n';
-
     return valid;
 }
 
 void Board::step_in_dir(std::vector<int>& valid, int dx, int dy)
 {
+}
+
+char Board::at(int i)
+{
+    if (i < 0 || i >= 64) return ' ';
+    return m_grid[i];
 }
 
 Color Board::color_at(int i)

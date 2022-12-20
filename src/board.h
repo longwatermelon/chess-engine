@@ -26,7 +26,7 @@ public:
 
 private:
     std::vector<int> get_valid_moves(int i);
-    void step_in_dir(std::vector<int>& valid, int dx, int dy);
+    void step_in_dir(std::vector<int>& valid, int i, int dx, int dy);
 
     char at(int i);
     Color color_at(int i);

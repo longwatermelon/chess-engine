@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 
     {
         Prog p(w, r, argv[1]);
-        p.move(argv[2], argv[3]);
+        /* p.move(argv[2], argv[3]); */
         p.render("out.png");
     }
 

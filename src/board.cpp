@@ -61,7 +61,7 @@ SDL_Texture *Board::render(SDL_Renderer *rend)
         { 'G', IMG_LoadTexture(rend, "res/b-king.png") }
     };
 
-    char tmp[3] = "e4";
+    char tmp[3] = "c4";
     int index = tmp[0] - 'a' + (7 - (tmp[1] - '1')) * 8;
     std::vector<int> valid_moves = get_valid_moves(index);
 
@@ -157,13 +157,33 @@ std::vector<int> Board::get_valid_moves(int i)
         if (color_at(i + 8 - 1) == Color::WHITE) valid.emplace_back(i + 8 - 1);
         if (color_at(i + 8 + 1) == Color::WHITE) valid.emplace_back(i + 8 + 1);
         break;
+    case 'r':
+        step_in_dir(valid, i, 1, 0);
+        step_in_dir(valid, i, 0, -1);
+        step_in_dir(valid, i, -1, 0);
+        step_in_dir(valid, i, 0, 1);
+        break;
     }
 
     return valid;
 }
 
-void Board::step_in_dir(std::vector<int>& valid, int dx, int dy)
+void Board::step_in_dir(std::vector<int>& valid, int i, int dx, int dy)
 {
+    Color col = color_at(i);
+    valid.emplace_back(i);
+    int x = i % 8 + dx;
+    int y = i / 8 + dy;
+
+    while (x >= 0 && x < 8 && y >= 0 && y < 8 && at(y * 8 + x) == ' ')
+    {
+        valid.emplace_back(y * 8 + x);
+        x += dx;
+        y += dy;
+    }
+
+    if (col != color_at(y * 8 + x) && color_at(y * 8 + x) != Color::NONE)
+        valid.emplace_back(y * 8 + x);
 }
 
 char Board::at(int i)

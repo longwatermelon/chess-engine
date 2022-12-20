@@ -61,7 +61,7 @@ SDL_Texture *Board::render(SDL_Renderer *rend)
         { 'G', IMG_LoadTexture(rend, "res/b-king.png") }
     };
 
-    char tmp[3] = "c2";
+    char tmp[3] = "d4";
     int index = tmp[0] - 'a' + (7 - (tmp[1] - '1')) * 8;
     std::vector<int> valid_moves = get_valid_moves(index);
 
@@ -196,6 +196,19 @@ std::vector<int> Board::get_valid_moves(int i)
         step_in_dir(valid, i, 0, -1);
         step_in_dir(valid, i, -1, 0);
         step_in_dir(valid, i, 0, 1);
+        break;
+    case 'g':
+    case 'G':
+        int x = i % 8;
+        int y = i / 8;
+        for (int r = std::max(y - 1, 0); r <= std::min(y + 1, 8); ++r)
+        {
+            for (int c = std::max(x - 1, 0); c <= std::min(x + 1, 8); ++c)
+            {
+                if (color_at(r * 8 + c) != color_at(i))
+                    valid.emplace_back(r * 8 + c);
+            }
+        }
         break;
     }
 

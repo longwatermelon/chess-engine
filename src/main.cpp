@@ -3,6 +3,7 @@
 
 int main(int argc, char **argv)
 {
+    srand(time(0));
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
 

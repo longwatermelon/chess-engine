@@ -61,10 +61,6 @@ SDL_Texture *Board::render(SDL_Renderer *rend)
         { 'G', IMG_LoadTexture(rend, "res/b-king.png") }
     };
 
-    char tmp[3] = "d4";
-    int index = tmp[0] - 'a' + (7 - (tmp[1] - '1')) * 8;
-    std::vector<int> valid_moves = get_valid_moves(index);
-
     for (int y = 0; y < 8; ++y)
     {
         for (int x = 0; x < 8; ++x)
@@ -76,14 +72,6 @@ SDL_Texture *Board::render(SDL_Renderer *rend)
 
             SDL_Rect r = { x * 100, y * 100, 100, 100 };
             SDL_RenderFillRect(rend, &r);
-
-            if (std::find(valid_moves.begin(), valid_moves.end(), y * 8 + x) != valid_moves.end())
-            {
-                SDL_SetRenderDrawBlendMode(rend, SDL_BLENDMODE_BLEND);
-                SDL_SetRenderDrawColor(rend, 0, 255, 0, 150);
-                SDL_RenderFillRect(rend, &r);
-                SDL_SetRenderDrawBlendMode(rend, SDL_BLENDMODE_NONE);
-            }
 
             if (m_grid[y * 8 + x] != ' ')
                 SDL_RenderCopy(rend, textures[m_grid[y * 8 + x]], 0, &r);

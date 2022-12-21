@@ -41,5 +41,7 @@ private:
     std::string m_fp;
     std::string m_grid;
     Color m_turn{ Color::NONE };
+
+    int m_from{ -1 }, m_to{ -1 };
 };
 

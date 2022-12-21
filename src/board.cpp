@@ -73,6 +73,14 @@ SDL_Texture *Board::render(SDL_Renderer *rend)
             SDL_Rect r = { x * 100, y * 100, 100, 100 };
             SDL_RenderFillRect(rend, &r);
 
+            if (y * 8 + x == m_from || y * 8 + x == m_to)
+            {
+                SDL_SetRenderDrawBlendMode(rend, SDL_BLENDMODE_BLEND);
+                SDL_SetRenderDrawColor(rend, 0, 255, 0, 100);
+                SDL_RenderFillRect(rend, &r);
+                SDL_SetRenderDrawBlendMode(rend, SDL_BLENDMODE_NONE);
+            }
+
             if (m_grid[y * 8 + x] != ' ')
                 SDL_RenderCopy(rend, textures[m_grid[y * 8 + x]], 0, &r);
         }
@@ -96,6 +104,9 @@ void Board::move(int from, int to)
     std::vector<int> moves = get_valid_moves(from);
     if (std::find(moves.begin(), moves.end(), to) == moves.end())
         throw std::runtime_error("Error: invalid move");
+
+    m_from = from;
+    m_to = to;
 
     m_grid[to] = m_grid[from];
     m_grid[from] = ' ';

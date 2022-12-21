@@ -124,6 +124,21 @@ void Board::move(int from, int to)
     }
 }
 
+void Board::random_move()
+{
+    std::vector<int> pieces;
+    for (size_t i = 0; i < m_grid.size(); ++i)
+    {
+        if (color_at(i) == m_turn && !get_valid_moves(i).empty())
+            pieces.emplace_back(i);
+    }
+
+    int i = pieces[rand() % pieces.size()];
+    std::vector<int> moves = get_valid_moves(i);
+
+    move(i, moves[rand() % moves.size()]);
+}
+
 void Board::dump()
 {
     std::ofstream ofs(m_fp);

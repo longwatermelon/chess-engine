@@ -22,6 +22,8 @@ int main(int argc, char **argv)
 
         if (argc == 6)
             p.move(argv[4], argv[5]);
+        else if (argc == 5)
+            p.random_move();
 
         p.render(argv[2]);
     }

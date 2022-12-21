@@ -12,6 +12,7 @@ public:
 
     void render(const std::string &out_fp);
     void move(const char *from, const char *to);
+    void random_move();
 
 private:
     SDL_Window *m_win{ nullptr };

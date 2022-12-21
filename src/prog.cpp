@@ -52,3 +52,8 @@ void Prog::move(const char *from, const char *to)
     }
 }
 
+void Prog::random_move()
+{
+    m_board.random_move();
+}
+

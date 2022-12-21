@@ -21,6 +21,7 @@ public:
 
     // from and to are indexes
     void move(int from, int to);
+    void random_move();
 
     void dump();
 

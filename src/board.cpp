@@ -185,9 +185,9 @@ std::vector<int> Board::get_valid_moves(int i, bool raw)
     {
         int x = i % 8;
         int y = i / 8;
-        for (int r = std::max(y - 2, 0); r <= std::min(y + 2, 8); ++r)
+        for (int r = std::max(y - 2, 0); r <= std::min(y + 2, 7); ++r)
         {
-            for (int c = std::max(x - 2, 0); c <= std::min(x + 2, 8); ++c)
+            for (int c = std::max(x - 2, 0); c <= std::min(x + 2, 7); ++c)
             {
                 if (std::abs((r - y) * (c - x)) == 2 && color_at(r * 8 + c) != color_at(i))
                     add_valid_move(valid, i, r * 8 + c, raw);
@@ -217,9 +217,9 @@ std::vector<int> Board::get_valid_moves(int i, bool raw)
     case 'G':
         int x = i % 8;
         int y = i / 8;
-        for (int r = std::max(y - 1, 0); r <= std::min(y + 1, 8); ++r)
+        for (int r = std::max(y - 1, 0); r <= std::min(y + 1, 7); ++r)
         {
-            for (int c = std::max(x - 1, 0); c <= std::min(x + 1, 8); ++c)
+            for (int c = std::max(x - 1, 0); c <= std::min(x + 1, 7); ++c)
             {
                 if (color_at(r * 8 + c) != color_at(i))
                     add_valid_move(valid, i, r * 8 + c, raw);
